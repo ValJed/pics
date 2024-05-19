@@ -1,6 +1,6 @@
 use clap::Parser;
 use exif::{In, Tag};
-use std::fs;
+use std::{fs, path::PathBuf};
 
 mod args;
 use args::Cli;
@@ -10,11 +10,14 @@ const CHARS_TO_REMOVE: [char; 2] = ['-', ':'];
 
 fn main() {
     let cli = Cli::parse();
-    // let is_recursive = cli.recursive;
+    let recursive = cli.recursive;
     let path = cli.path;
 
-    let files_res = fs::read_dir(path);
+    rename_files(path, recursive);
+}
 
+fn rename_files(path: PathBuf, recursive: bool) {
+    let files_res = fs::read_dir(path);
     if files_res.is_err() {
         eprintln!("Error reading directory: {}", files_res.unwrap_err());
         return;
@@ -35,6 +38,10 @@ fn main() {
 
         let file_type = file_type_res.unwrap();
         if !file_type.is_file() {
+            if file_type.is_dir() {
+                rename_files(entry.path(), recursive);
+            }
+
             continue;
         }
 

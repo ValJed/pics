@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -6,7 +8,7 @@ use clap::Parser;
 #[command(name = "pics")]
 pub struct Cli {
     /// Path of the directory to rename files in
-    pub path: String,
+    pub path: PathBuf,
 
     /// Rename files recursively
     #[arg(short, long/* , default_value = false */)]
