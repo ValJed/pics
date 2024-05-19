@@ -1,14 +1,17 @@
+use clap::Parser;
 use exif::{In, Tag};
 use std::fs;
 
+mod args;
+use args::Cli;
+
 const IMAGE_EXTENSIONS: [&str; 3] = ["jpg", "jpeg", "png"];
-const CHARS_TO_REMOVE: [char; 3] = ['-', ' ', ':'];
+const CHARS_TO_REMOVE: [char; 2] = ['-', ':'];
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    let path = args[1].clone();
-    println!("a: {:?}", args);
-    println!("path: {:?}", path);
+    let cli = Cli::parse();
+    // let is_recursive = cli.recursive;
+    let path = cli.path;
 
     let files_res = fs::read_dir(path);
 
@@ -100,7 +103,8 @@ fn format_name(name: String, ext: String) -> String {
     let name = name
         .chars()
         .filter(|char| !CHARS_TO_REMOVE.contains(char))
-        .collect::<String>();
+        .collect::<String>()
+        .replace(" ", "_");
 
     format!("{}.{}", name, ext)
 }
